@@ -34,7 +34,7 @@ services:
       - "21:21"
       - "40000-40100:40000-40100"
     volumes:
-      - /path/to/data:/home
+      - ./ftp10:/home
 
 
 #  vsftpd:
