@@ -1,0 +1,292 @@
+version: '3.8'
+
+networks:
+  laravel:
+    external: true
+
+
+#
+#volumes:
+#  cron_volume:
+#  portainer_data:
+
+  #shared_caddyfile:   # Добавляем том для общего использования файла Caddyfile
+
+##  caddy_caddyfile:
+##    driver: bridge
+##
+##  auto_as_img_volume:
+##    driver: local
+##    driver_opts:
+##      type: none
+##      device: '${FOLDER_2312AUTO_AS__DIR_PHOTO}'
+##      o: bind
+
+services:
+
+
+  vsftpd:
+    build:
+      context: .          # Указывает на текущий каталог
+      dockerfile: ftp.Dockerfile  # Имя вашего Dockerfile
+    ports:
+      - "21:21"
+      - "40000-40100:40000-40100"
+    volumes:
+      - /path/to/data:/home
+
+
+#  vsftpd:
+#    image: fauria/vsftpd
+#    ports:
+#      - "21:21"
+#    volumes:
+#      - ./vsftpd_user1.conf:/etc/vsftpd/users/user1
+#      - ./vsftpd_user2.conf:/etc/vsftpd/users/user2
+##      - ./vsftpd_user3.conf:/etc/vsftpd/users/user3
+#      - /home_ftp3:/home
+#    environment:
+#      - FTP_USER_1=user1:password1
+#      - FTP_USER_2=user2:password2
+#      - FTP_USER_3=user3:password3
+#
+
+
+
+
+#  ftp-server:
+#    build:
+#        context: .
+#        dockerfile: ftp.Dockerfile
+##    image: fauria/vsftpd
+#    container_name: ftp-server
+#    privileged: true
+#    ports:
+#      - "21:21"
+##      - "21100-21110:21100-21110"  # Порты для пассивного режима
+#      - "40000-40100:40000-40100"  # Порты для пассивного режима
+#    environment:
+##      - FTP_USER1=user1
+##      - FTP_PASS1=password1
+##      - FTP_USER=user2
+##      - FTP_PASS=password2
+##      - FTP_USER2=user2
+##      - FTP_PASS2=password2
+##      - FTP_USER3=username3
+##      - FTP_PASS3=password3
+#      - PASV_ADDRESS=${SERVER_IP}
+##      - PASV_ADDRESS=127.0.0.1  # Замените на IP вашего сервера
+##      - PASV_MIN_PORT=21100
+##      - PASV_MAX_PORT=21110
+#      - PASV_MIN_PORT=40000
+#      - PASV_MAX_PORT=40100
+##      - guest_enable=YES
+##      - use_localtime=YES
+##      - И разрешаем локальных (и виртуальных) пользователей:
+##      - local_enable=YES
+#    volumes:
+##      - ./ftp.virtual_users.txt:/etc/vsftpd/virtual_users.txt
+##      - /home_ftp3:/home/vsftpd  # Локальная папка для хранения данных
+#      - /home_ftp3:/home  # Локальная папка для хранения данных
+##      - /home_ftp2:/home  # Локальная папка для хранения данных
+##      - /home_ftp3/user1:/home/vsftpd/user1  # Локальная папка для хранения данных
+#
+#      - ./ftp.vsftpd.conf:/etc/vsftpd/vsftpd.conf
+#      - ./ftp.virtual_users.txt:/tmp/virtual_users.txt
+#      - ./ftp.add_virtual_users.sh:/usr/local/bin/add_virtual_users.sh
+##    command: ["sh", "-c", "/usr/local/bin/add_virtual_users.sh && /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf"]
+#
+#    # Настройки перезапуска
+#    restart: unless-stopped
+#
+
+#  ftp-server:
+#    build:
+#      context: .
+#      dockerfile: ftp.Dockerfile
+#    container_name: ftp-server
+#    ports:
+#      - "21:21"
+#      - "40000-40100:40000-40100"
+#    environment:
+#      - PASV_ADDRESS=${SERVER_IP}
+#      - PASV_MIN_PORT=40000
+#      - PASV_MAX_PORT=40100
+#    volumes:
+#      - /home_ftp3:/home  # Локальная папка для хранения данных
+#      - ./ftp.vsftpd.conf:/etc/vsftpd/vsftpd.conf
+#      - ./ftp.virtual_users.txt:/tmp/virtual_users.txt
+##      - ./ftp.add_virtual_users.sh:/usr/local/bin/add_virtual_users.sh
+##    command: ["sh", "-c", "chmod +x /usr/local/bin/add_virtual_users.sh && /usr/local/bin/add_virtual_users.sh && /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf"]
+#    command: []
+#    restart: unless-stopped
+##    restart: "no"
+
+
+
+
+#
+#  vsftpd:
+#    build:
+#      context: .
+#      dockerfile: /ftp.Dockerfile
+#      args:
+#        USER_ID: 1000
+#        GROUP_ID: 1000
+#    restart: always
+#    ports:
+#      - 0.0.0.0:20:20
+#      - 0.0.0.0:21:21
+#      - 21100-21110:21100-21110
+#    volumes:
+#      - ./home:/home/vsftpd
+#      - ./logs:/var/log/vsftpd
+#
+#  ftp-server:
+#    image: fauria/vsftpd
+#    container_name: ftp-server
+#    ports:
+#      - "21:21"
+#      - "60000-60099:60000-60099"
+##      - 0.0.0.0:20:20
+##      - 0.0.0.0:21:21
+##    hostname: ftp
+##    privileged: true
+##    user: root
+#    volumes:
+#      - ./vsftpd_user1.conf:/etc/vsftpd/users/user1
+#      - ./vsftpd_user2.conf:/etc/vsftpd/users/user2
+##      - /home_ftp3:/home
+#    environment:
+#      FTP_USER_1: user1:password1
+#      FTP_USER_2: user2:password2
+#      PASV_ADDRESS: ${SERVER_IP}
+#      PASV_MIN_PORT: 60000
+#      PASV_MAX_PORT: 60099
+#      PASV_ENABLE: 1
+##      PASV_ADDR_RESOLVE: NO
+##      REVERSE_LOOKUP_ENABLE: 1
+##      PASV_PROMISCUOUS: 0
+##      PORT_PROMISCUOUS: 0
+#    restart: always
+#    networks:
+#      - laravel
+
+
+
+
+
+
+
+
+
+#
+#  ftp-server:
+#    image: fauria/vsftpd
+#    container_name: ftp-server
+#    ports:
+##      - "20:20"
+#      - "21:21"
+#      - "21100-21105:21100-21105"
+#      #- "30000-30009:30000-30009"
+#      #- "60000-60099:60000-60099"
+##    environment:
+##      - FTP_USER=${AVTOAS_FTP_USER}
+##      - FTP_PASS=${AVTOAS_FTP_PASS}
+##      - PASV_ADDRESS=45.12.72.4
+###      - PASV_ENABLE=YES
+#    environment:
+##      FTP_USER: ${AVTOAS_FTP_USER}
+##      FTP_PASS: ${AVTOAS_FTP_PASS}
+#      FTP_USER: ${AVTOAS_FTP_USER}
+#      FTP_PASS: ${AVTOAS_FTP_PASS}
+##      FTP_USER_1: ${AVTOAS_FTP_USER}
+##      FTP_PASS_1: ${AVTOAS_FTP_PASS}
+##      FTP_USER_2: user2
+##      FTP_PASS_2: user2
+#      PASV_ADDRESS: ${SERVER_IP}
+#    volumes:
+#      - '/home_ftp3:/home/vsftpd'
+#      - '/home_ftp4:/home/vsftpd/user1'
+#      - '/home_ftp2:/home/vsftpd/user2'
+#    restart: always
+#    networks:
+#      - laravel
+#
+#  ftp-server:
+#    image: fauria/vsftpd
+#    container_name: ftp-server
+#    ports:
+##      - "20:20"
+#      - "2121:21"
+#      - "21106-21110:21106-21110"
+#      #- "30000-30009:30000-30009"
+#      #- "60000-60099:60000-60099"
+##    environment:
+##      - FTP_USER=${AVTOAS_FTP_USER}
+##      - FTP_PASS=${AVTOAS_FTP_PASS}
+##      - PASV_ADDRESS=45.12.72.4
+###      - PASV_ENABLE=YES
+#    environment:
+##      FTP_USER: ${AVTOAS_FTP_USER}
+##      FTP_PASS: ${AVTOAS_FTP_PASS}
+#      FTP_USER: ${AVTOAS_FTP_USER}
+#      FTP_PASS: ${AVTOAS_FTP_PASS}
+##      FTP_USER_1: ${AVTOAS_FTP_USER}
+##      FTP_PASS_1: ${AVTOAS_FTP_PASS}
+##      FTP_USER_2: user2
+##      FTP_PASS_2: user2
+#      PASV_ADDRESS: ${SERVER_IP}
+#    volumes:
+#      - '/home_ftp3:/home/vsftpd'
+#      - '/home_ftp4:/home/vsftpd/user1'
+#      - '/home_ftp2:/home/vsftpd/user2'
+#    restart: always
+#    networks:
+#      - laravel
+#
+
+
+#  ftp_server:
+#    image: stilliard/pure-ftpd
+#    container_name: ftp_server
+#    restart: always
+#    ports:
+#      - "21:21"              # Порт FTP
+#      - "30000-30009:30000-30009"  # Диапазон портов для пассивного режима
+#    environment:
+#      PUBLICHOST: ${SERVER_IP} # Внешний IP-адрес сервера
+#      FTP_PASSIVE_PORTS: "30000:30009" # Порты для пассивного режима
+#      FTP_MAX_CLIENTS: 5
+#      FTP_MAX_CONNECTIONS: 5
+#      FTP_TLS: "1"  # Включаем поддержку TLS
+#      FTP_TLS_CACERT: "/etc/ssl/certs/ca-certificates.crt"  # Указываем путь к сертификату
+#      FTP_TLS_CERTFILE: "/etc/ssl/certs/pure-ftpd.pem"  # Указываем путь к сертификату
+#      FTP_TLS_KEYFILE: "/etc/ssl/private/pure-ftpd.key"  # Указываем путь к приватному ключу
+#
+#    volumes:
+#      - /ftp/user1:/home/ftpusers/user1  # Папка для пользователя user1
+#      - /ftp/user2:/home/ftpusers/user2  # Папка для пользователя user2
+#      - /ftp/user3:/home/ftpusers/user3  # Папка для пользователя user3
+#      - ./ftp_passwd:/etc/pure-ftpd/passwd  # Файл для хранения данных пользователей
+#      - ./ssl:/etc/ssl/private  # Папка с сертификатами
+#    command: /bin/bash -c "pure-ftpd /etc/pure-ftpd/passwd"
+
+
+
+#  ftp-server2:
+#    build: ./ftp-server2
+#    container_name: ftp-server2
+#    ports:
+#      - "20:20"
+#      - "21:21"
+#      - "21100-21110:21100-21110"
+#    environment:
+#      - PASV_ADDRESS=${SERVER_IP}
+#      - PASV_MIN_PORT=21100
+#      - PASV_MAX_PORT=21110
+#      - FILE_OPEN_MODE=0666
+#      - LOCAL_UMASK=022
+#      - REVERSE_LOOKUP_ENABLE=NO
+#    volumes:
+#      - ./ftp_data:/home/vsftpd
