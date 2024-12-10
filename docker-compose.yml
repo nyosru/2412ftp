@@ -2,349 +2,291 @@ version: '3.8'
 
 networks:
   laravel:
-    driver: bridge
-  shared_network:
     external: true
 
-volumes:
-  cron_volume:
-  caddy_caddyfile:
+
+  #
+  #volumes:
+  #  cron_volume:
+  #  portainer_data:
+
   #shared_caddyfile:   # Добавляем том для общего использования файла Caddyfile
+
+##  caddy_caddyfile:
+##    driver: bridge
+##
+##  auto_as_img_volume:
+##    driver: local
+##    driver_opts:
+##      type: none
+##      device: '${FOLDER_2312AUTO_AS__DIR_PHOTO}'
+##      o: bind
 
 services:
 
-    caddy:
-      container_name: caddy
-      image: caddy:2.6
-      restart: unless-stopped
-      ports:
-        - "80:80"
-        - "443:443"
-        - "443:443/udp"
-      volumes:
-        - ./caddy/Caddyfile:/etc/caddy/Caddyfile
-        - ./caddy/config:/config/caddy
-        - caddy_caddyfile:/etc/caddy
-        - '${FOLDER_2309LIVEWIRE}:${FOLDER_2309LIVEWIRE_SERV}'
-        - '${FOLDER_SITE_API}:${FOLDER_SITE_API_SERV}'
-        - '${FOLDER_BASE12NAREK}:${FOLDER_BASE12NAREK_SERV}'
-        - '${FOLDER_2410SVO}:${FOLDER_2410SVO_SERV}'
 
-        #- shared_caddyfile:/shared/caddyfile  # Монтируем том для общего использования файла
-        #- shared_caddyfile:/etc/caddy
-        #- shared_caddyfile:/etc/caddy/Caddyfile
+  vsftpd:
+    build:
+      context: .          # Указывает на текущий каталог
+      dockerfile: ftp.Dockerfile  # Имя вашего Dockerfile
+    ports:
+      - "21:21"
+      - "40000-40100:40000-40100"
+    volumes:
+      - /path/to/data:/home
 
 
-          #- ./caddy/log:/var/log/caddy
-  #      #      - ${FOLDER_UPR_SERV}/storage/app/caddy:/etc/caddy
-  ##      - caddy_caddyfile:/caddy/Caddyfile
-  ##      - caddy_caddyfile:/caddy
-  ##      - caddy_caddyfile:/etc/caddy
-  ##      - caddy_caddyfile:./caddy
-  ##      - caddy_caddyfile:/etc/caddy/Caddyfile
-  ##      - caddy_caddyfile:/caddy
-  ##      - caddyfile:/caddy/Caddyfile
-  ##      - '${FOLDER_UPR_SERV}/storage/app/caddyfile33/:/etc/caddy/Caddyfile'
-  ###      - '${FOLDER_2309LIVEWIRE}:/2309livewire'
-  ###      - '${FOLDER_TEST231012}:${FOLDER_TEST231012_SERV}'
-  ##      - '${FOLDER_2302DIDRIVE}:${FOLDER_2302DIDRIVE_CADDY}'
-  ##      - '${FOLDER_TEST23116PHP}:${FOLDER_TEST23116PHP_SERV}'
-  ##      - '${FOLDER_UPR_SERV}:${FOLDER_UPR_SERV_SERV}'
-  ##      -  '/etc/caddy/Caddyfile:${FOLDER_UPR_SERV_SERV}/storage/app/caddyfile2'
-  ##      -  './caddy/Caddyfile:${FOLDER_UPR_SERV_SERV}/storage/app/caddyfile2'
-  ##      - '${FOLDER_2401TEST}:${FOLDER_2401TEST_SERV}'
-  #
-  #
-  #      - '${FOLDER_2312AUTO_AS}:${FOLDER_2312AUTO_AS_SERV}'
-  #      - '${FOLDER_2312AUTO_AS__DIR_PHOTO}:${FOLDER_2312AUTO_AS_SERV}/storage/app/public/photo'
-  #      - '${FOLDER_2312AUTO_AS_DIDRIVE}:${FOLDER_2312AUTO_AS_DIDRIVE_SERV}'
-  #      - '${FOLDER_API_PHP74}:${FOLDER_API_PHP74_SERV}'
-  #
-  #      - '${FOLDER_2309LIVEWIRE}:${FOLDER_2309LIVEWIRE_SERV}'
-  #      - '${FOLDER_BASE17}:${FOLDER_BASE17_SERV}'
-  #      - '${FOLDER_BASE16}:${FOLDER_BASE16_SERV}'
-  #      - '${FOLDER_2308BEGET}:${FOLDER_2308BEGET_SERV}'
-  #      - '${FOLDER_BITRIX1}:${FOLDER_BITRIX1_SERV}'
-  #      - './../2407bitrix24:/home/bitrix24'
-
-      depends_on:
-        - db_mysql
-  #      - 2308beget
-  #      - 2309livewire
-  #      - base17
-        - base12narek
-  ##      - test231012
-  ##      - 2302didrive
-  ##      - test231116php
-  ##      - upr_serv
-  ##      - 2401test
-  ##      - api_php74
-  ##      - 2302docker_papa
-  #      - bitrix1
-      networks:
-        - laravel
-
-    db_mysql:
-      container_name: db_mysql
-      image: mariadb:10.7.8
-      networks:
-        - laravel
-      environment:
-        MYSQL_ROOT_HOST: "%"
-        MYSQL_ROOT_PASSWORD: ${MYSQL_DB_ROOT_PASSWORD}
-#      ports:
-#        - 3306:3306
-      volumes:
-        - '${MYSQL_DB_FOLDER}:/var/lib/mysql'
-      restart: unless-stopped
-
-    phpmyadmin:
-      image: phpmyadmin/phpmyadmin
-      links:
-        - db_mysql:db
-      ports:
-        - 6060:80
-      environment:
-        MYSQL_ROOT_PASSWORD: ${MYSQL_DB_ROOT_PASSWORD}
-        UPLOAD_LIMIT: 300M
-      depends_on:
-        - db_mysql
-      networks:
-        - laravel
-    #
-    #
-    ### ------------ дальше контейнеры в работе ------------------
-    #
-    #
-
-    #  web_scraper:
-    #    build:
-    #      #context: ./scrapper7711  # Указываем путь к директории с Dockerfile
-    #      context: ${FOLDER_2409PARSER}  # Указываем путь к директории с Dockerfile
-    #    container_name: web_scraper
-    #    links:
-    #      - db_mysql:db_mysql
-    #    depends_on:
-    #      - db_mysql
-    #    ports:
-    #      - "5017:5007"
-    ##    expose:
-    ##      - 5055
-    #    environment:
-    #      - xFLASK_ENV=production
-    #      - xxFLASK_ENV=develop
-    #      - DATABASE_URI=mysql+pymysql://root:${MYSQL_DB_ROOT_PASSWORD}@db_mysql:3306/2309livewire
-    #    networks:
-    #      - laravel
-
-#    web_scraper2:
-#      build:
-#        context: ${FOLDER_2409PARSER}  # Указываем путь к директории с Dockerfile
-#      container_name: web_scraper2
-#      #platform: linux/amd64  # Добавляем этот флаг для принудительного использования amd64
-#      #platform: linux/arm64  # Добавляем этот флаг для принудительного использования amd64
-#      links:
-#        - db_mysql:db_mysql
-#      depends_on:
-#        - db_mysql
-#      ports:
-#        - "5017:5047"
-#      environment:
-#        - xFLASK_ENV=production
-#        - xxFLASK_ENV=develop
-#        - DATABASE_URI=mysql+pymysql://root:${MYSQL_DB_ROOT_PASSWORD}@db_mysql:3306/2309livewire
-#      networks:
-#        - laravel
-#
-#      volumes:
-#        - ${FOLDER_2409PARSER}/logs:/var/log/web_scraper2
-
-
-
-
-    2410svo:
-      container_name: 2410svo
-      depends_on:
-        - db_mysql
-      networks:
-        - laravel
-        - shared_network
-      build:
-        context: .
-        dockerfile: docker.2410svo.Dockerfile
-      working_dir: ${FOLDER_2410SVO_SERV}
-      environment:
-        - PHPGROUP=www-data
-        - PHPUSER=www-data
-        - FOLDER=${FOLDER_2410SVO_SERV}
-      restart: unless-stopped
-#      links:
-#        - web_scraper2:parser_service
-      #    expose:
-      #      - 9000
-      volumes:
-        - '${FOLDER_2410SVO}:${FOLDER_2410SVO_SERV}'
-
-
-    2309livewire:
-      container_name: 2309livewire
-      depends_on:
-        - db_mysql
-      networks:
-        - laravel
-        - shared_network
-      build:
-        context: .
-        #      dockerfile: docker.2308beget.Dockerfile
-        dockerfile: docker.2309livewire.Dockerfile
-      working_dir: ${FOLDER_2309LIVEWIRE_SERV}
-      environment:
-        - PHPGROUP=www-data
-        - PHPUSER=www-data
-        - FOLDER=${FOLDER_2309LIVEWIRE_SERV}
-      restart: unless-stopped
-#      links:
-#        - web_scraper2:parser_service
-      #    expose:
-      #      - 9000
-      volumes:
-        - '${FOLDER_2309LIVEWIRE}:${FOLDER_2309LIVEWIRE_SERV}'
-        #- './caddy/Caddyfile:${FOLDER_2309LIVEWIRE_SERV}/storage/app/caddy/Caddyfile'
-        #- './caddy/prod.Caddyfile:${FOLDER_2309LIVEWIRE_SERV}/storage/app/caddy_prod/Caddyfile'
-        #- shared_caddyfile:${FOLDER_2309LIVEWIRE_SERV}/storage/app/caddy-cfg
-        - ./caddy/dev.Caddyfile:${FOLDER_2309LIVEWIRE_SERV}/storage/app/caddy/dev.Caddyfile
-        - ./caddy/prod.Caddyfile:${FOLDER_2309LIVEWIRE_SERV}/storage/app/caddy/prod.Caddyfile
-        #- shared_caddyfile:/storage/caddy  # Монтируем том для доступа к Caddyfile в контейнере
-        - /var/run/docker.sock:/var/run/docker.sock
-
-#    healthcheck:
-#      test: ["CMD", "curl", "-k", "-f", "https://stn.local"]
-#      interval: 30s
-#      timeout: 10s
-#      retries: 3
-#      start_period: 10s
-
-
-##  selenium:
-###    image: selenium/standalone-chrome:latest
-##    image: seleniarm/standalone-chromium:latest
-##    container_name: selenium
-##    ports:
-##      - "4444:4444"
-##    shm_size: 2gb
-##
-##  python-parser:
-##    image: python:3.9-slim
-##    container_name: python-parser
-##    volumes:
-##      - ./parser2:/usr/src/app
-##    working_dir: /usr/src/app
-##    depends_on:
-##      - selenium
-##      - db_mysql
-##    networks:
-##      - laravel
-##    environment:
-##      MYSQL_HOST: db_mysql
-##      MYSQL_DATABASE: 2309livewire
-##      MYSQL_USER: root
-##      MYSQL_PASSWORD: ${MYSQL_DB_ROOT_PASSWORD}
-##    command: bash -c "pip install -r requirements.txt && python scrapper77.py"
-##    ports:
-##      - "5001:5000"
-#
-#  python-parser23:
-#    image: python:3.9-slim
-#    container_name: python-parser23
-#
+#  vsftpd:
+#    image: fauria/vsftpd
+#    ports:
+#      - "21:21"
 #    volumes:
-#      - ./parser22:/app
-#    working_dir: /app
-#    #depends_on:
-##      - selenium
-#     # - db_mysql
-#    networks:
-#      - laravel1233
+#      - ./vsftpd_user1.conf:/etc/vsftpd/users/user1
+#      - ./vsftpd_user2.conf:/etc/vsftpd/users/user2
+##      - ./vsftpd_user3.conf:/etc/vsftpd/users/user3
+#      - /home_ftp3:/home
 #    environment:
-#      MYSQL_HOST: db_mysql
-#      MYSQL_DATABASE: 2309livewire
-#      MYSQL_USER: root
-#      MYSQL_PASSWORD: ${MYSQL_DB_ROOT_PASSWORD}
-##    command: bash -c "pip install -r requirements.txt && python scrapper77.py"
-#    expose:
-#      - 5022
-#    #restart: unless-stopped
-##    ports:
-##      - "5022:5022"
-
-
-    base12narek:
-      container_name: base12narek
-      depends_on:
-        - db_mysql
-      networks:
-        - laravel
-      build:
-        context: .
-        dockerfile: docker.laravel_vue.Dockerfile
-      working_dir: ${FOLDER_BASE12NAREK_SERV}
-      environment:
-        - PHPGROUP=www-data
-        - PHPUSER=www-data
-        - FOLDER=${FOLDER_BASE12NAREK_SERV}
-      restart: unless-stopped
-      # tty: true
-      expose:
-        - 9000
-      links:
-        - db_mysql:db
-      volumes:
-        - '${FOLDER_BASE12NAREK}:${FOLDER_BASE12NAREK_SERV}'
-
-
-#  2308beget:
-#    container_name: 2308beget
+#      - FTP_USER_1=user1:password1
+#      - FTP_USER_2=user2:password2
+#      - FTP_USER_3=user3:password3
 #
+
+
+
+
+#  ftp-server:
+#    build:
+#        context: .
+#        dockerfile: ftp.Dockerfile
+##    image: fauria/vsftpd
+#    container_name: ftp-server
+#    privileged: true
+#    ports:
+#      - "21:21"
+##      - "21100-21110:21100-21110"  # Порты для пассивного режима
+#      - "40000-40100:40000-40100"  # Порты для пассивного режима
+#    environment:
+##      - FTP_USER1=user1
+##      - FTP_PASS1=password1
+##      - FTP_USER=user2
+##      - FTP_PASS=password2
+##      - FTP_USER2=user2
+##      - FTP_PASS2=password2
+##      - FTP_USER3=username3
+##      - FTP_PASS3=password3
+#      - PASV_ADDRESS=${SERVER_IP}
+##      - PASV_ADDRESS=127.0.0.1  # Замените на IP вашего сервера
+##      - PASV_MIN_PORT=21100
+##      - PASV_MAX_PORT=21110
+#      - PASV_MIN_PORT=40000
+#      - PASV_MAX_PORT=40100
+##      - guest_enable=YES
+##      - use_localtime=YES
+##      - И разрешаем локальных (и виртуальных) пользователей:
+##      - local_enable=YES
+#    volumes:
+##      - ./ftp.virtual_users.txt:/etc/vsftpd/virtual_users.txt
+##      - /home_ftp3:/home/vsftpd  # Локальная папка для хранения данных
+#      - /home_ftp3:/home  # Локальная папка для хранения данных
+##      - /home_ftp2:/home  # Локальная папка для хранения данных
+##      - /home_ftp3/user1:/home/vsftpd/user1  # Локальная папка для хранения данных
+#
+#      - ./ftp.vsftpd.conf:/etc/vsftpd/vsftpd.conf
+#      - ./ftp.virtual_users.txt:/tmp/virtual_users.txt
+#      - ./ftp.add_virtual_users.sh:/usr/local/bin/add_virtual_users.sh
+##    command: ["sh", "-c", "/usr/local/bin/add_virtual_users.sh && /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf"]
+#
+#    # Настройки перезапуска
+#    restart: unless-stopped
+#
+
+#  ftp-server:
 #    build:
 #      context: .
-#      dockerfile: docker.2308beget.Dockerfile
-#    working_dir: ${FOLDER_2308BEGET_SERV}
+#      dockerfile: ftp.Dockerfile
+#    container_name: ftp-server
+#    ports:
+#      - "21:21"
+#      - "40000-40100:40000-40100"
 #    environment:
-#      - PHPGROUP=www-data
-#      - PHPUSER=www-data
-#      - FOLDER=${FOLDER_2308BEGET_SERV}
-#    restart: unless-stopped
-#    expose:
-#      - 9000
+#      - PASV_ADDRESS=${SERVER_IP}
+#      - PASV_MIN_PORT=40000
+#      - PASV_MAX_PORT=40100
 #    volumes:
-#      #      - '${FOLDER_2308BEGET}:/2308beget'
-#      - '${FOLDER_2308BEGET}:${FOLDER_2308BEGET_SERV}'
+#      - /home_ftp3:/home  # Локальная папка для хранения данных
+#      - ./ftp.vsftpd.conf:/etc/vsftpd/vsftpd.conf
+#      - ./ftp.virtual_users.txt:/tmp/virtual_users.txt
+##      - ./ftp.add_virtual_users.sh:/usr/local/bin/add_virtual_users.sh
+##    command: ["sh", "-c", "chmod +x /usr/local/bin/add_virtual_users.sh && /usr/local/bin/add_virtual_users.sh && /usr/sbin/vsftpd /etc/vsftpd/vsftpd.conf"]
+#    command: []
+#    restart: unless-stopped
+##    restart: "no"
+
+
+
+
 #
-#    depends_on:
-#      - db_mysql
+#  vsftpd:
+#    build:
+#      context: .
+#      dockerfile: /ftp.Dockerfile
+#      args:
+#        USER_ID: 1000
+#        GROUP_ID: 1000
+#    restart: always
+#    ports:
+#      - 0.0.0.0:20:20
+#      - 0.0.0.0:21:21
+#      - 21100-21110:21100-21110
+#    volumes:
+#      - ./home:/home/vsftpd
+#      - ./logs:/var/log/vsftpd
+#
+#  ftp-server:
+#    image: fauria/vsftpd
+#    container_name: ftp-server
+#    ports:
+#      - "21:21"
+#      - "60000-60099:60000-60099"
+##      - 0.0.0.0:20:20
+##      - 0.0.0.0:21:21
+##    hostname: ftp
+##    privileged: true
+##    user: root
+#    volumes:
+#      - ./vsftpd_user1.conf:/etc/vsftpd/users/user1
+#      - ./vsftpd_user2.conf:/etc/vsftpd/users/user2
+##      - /home_ftp3:/home
+#    environment:
+#      FTP_USER_1: user1:password1
+#      FTP_USER_2: user2:password2
+#      PASV_ADDRESS: ${SERVER_IP}
+#      PASV_MIN_PORT: 60000
+#      PASV_MAX_PORT: 60099
+#      PASV_ENABLE: 1
+##      PASV_ADDR_RESOLVE: NO
+##      REVERSE_LOOKUP_ENABLE: 1
+##      PASV_PROMISCUOUS: 0
+##      PORT_PROMISCUOUS: 0
+#    restart: always
+#    networks:
+#      - laravel
+
+
+
+
+
+
+
+
+
+#
+#  ftp-server:
+#    image: fauria/vsftpd
+#    container_name: ftp-server
+#    ports:
+##      - "20:20"
+#      - "21:21"
+#      - "21100-21105:21100-21105"
+#      #- "30000-30009:30000-30009"
+#      #- "60000-60099:60000-60099"
+##    environment:
+##      - FTP_USER=${AVTOAS_FTP_USER}
+##      - FTP_PASS=${AVTOAS_FTP_PASS}
+##      - PASV_ADDRESS=45.12.72.4
+###      - PASV_ENABLE=YES
+#    environment:
+##      FTP_USER: ${AVTOAS_FTP_USER}
+##      FTP_PASS: ${AVTOAS_FTP_PASS}
+#      FTP_USER: ${AVTOAS_FTP_USER}
+#      FTP_PASS: ${AVTOAS_FTP_PASS}
+##      FTP_USER_1: ${AVTOAS_FTP_USER}
+##      FTP_PASS_1: ${AVTOAS_FTP_PASS}
+##      FTP_USER_2: user2
+##      FTP_PASS_2: user2
+#      PASV_ADDRESS: ${SERVER_IP}
+#    volumes:
+#      - '/home_ftp3:/home/vsftpd'
+#      - '/home_ftp4:/home/vsftpd/user1'
+#      - '/home_ftp2:/home/vsftpd/user2'
+#    restart: always
+#    networks:
+#      - laravel
+#
+#  ftp-server:
+#    image: fauria/vsftpd
+#    container_name: ftp-server
+#    ports:
+##      - "20:20"
+#      - "2121:21"
+#      - "21106-21110:21106-21110"
+#      #- "30000-30009:30000-30009"
+#      #- "60000-60099:60000-60099"
+##    environment:
+##      - FTP_USER=${AVTOAS_FTP_USER}
+##      - FTP_PASS=${AVTOAS_FTP_PASS}
+##      - PASV_ADDRESS=45.12.72.4
+###      - PASV_ENABLE=YES
+#    environment:
+##      FTP_USER: ${AVTOAS_FTP_USER}
+##      FTP_PASS: ${AVTOAS_FTP_PASS}
+#      FTP_USER: ${AVTOAS_FTP_USER}
+#      FTP_PASS: ${AVTOAS_FTP_PASS}
+##      FTP_USER_1: ${AVTOAS_FTP_USER}
+##      FTP_PASS_1: ${AVTOAS_FTP_PASS}
+##      FTP_USER_2: user2
+##      FTP_PASS_2: user2
+#      PASV_ADDRESS: ${SERVER_IP}
+#    volumes:
+#      - '/home_ftp3:/home/vsftpd'
+#      - '/home_ftp4:/home/vsftpd/user1'
+#      - '/home_ftp2:/home/vsftpd/user2'
+#    restart: always
 #    networks:
 #      - laravel
 #
 
-    site_api:
-      container_name: site_api
-      depends_on:
-        - db_mysql
-      networks:
-        - laravel
-      build:
-        context: .
-        dockerfile: docker.php74_soap.Dockerfile
-      working_dir: ${FOLDER_SITE_API_SERV}
-      environment:
-        - PHPGROUP=www-data
-        - PHPUSER=www-data
-        - FOLDER=${FOLDER_SITE_API_SERV}
-      restart: unless-stopped
-      # tty: true
-      expose:
-        - 9000
-      # links:
-      #   - db_mysql:db
-      volumes:
-        - '${FOLDER_SITE_API}:${FOLDER_SITE_API_SERV}'
+
+#  ftp_server:
+#    image: stilliard/pure-ftpd
+#    container_name: ftp_server
+#    restart: always
+#    ports:
+#      - "21:21"              # Порт FTP
+#      - "30000-30009:30000-30009"  # Диапазон портов для пассивного режима
+#    environment:
+#      PUBLICHOST: ${SERVER_IP} # Внешний IP-адрес сервера
+#      FTP_PASSIVE_PORTS: "30000:30009" # Порты для пассивного режима
+#      FTP_MAX_CLIENTS: 5
+#      FTP_MAX_CONNECTIONS: 5
+#      FTP_TLS: "1"  # Включаем поддержку TLS
+#      FTP_TLS_CACERT: "/etc/ssl/certs/ca-certificates.crt"  # Указываем путь к сертификату
+#      FTP_TLS_CERTFILE: "/etc/ssl/certs/pure-ftpd.pem"  # Указываем путь к сертификату
+#      FTP_TLS_KEYFILE: "/etc/ssl/private/pure-ftpd.key"  # Указываем путь к приватному ключу
+#
+#    volumes:
+#      - /ftp/user1:/home/ftpusers/user1  # Папка для пользователя user1
+#      - /ftp/user2:/home/ftpusers/user2  # Папка для пользователя user2
+#      - /ftp/user3:/home/ftpusers/user3  # Папка для пользователя user3
+#      - ./ftp_passwd:/etc/pure-ftpd/passwd  # Файл для хранения данных пользователей
+#      - ./ssl:/etc/ssl/private  # Папка с сертификатами
+#    command: /bin/bash -c "pure-ftpd /etc/pure-ftpd/passwd"
+
+
+
+#  ftp-server2:
+#    build: ./ftp-server2
+#    container_name: ftp-server2
+#    ports:
+#      - "20:20"
+#      - "21:21"
+#      - "21100-21110:21100-21110"
+#    environment:
+#      - PASV_ADDRESS=${SERVER_IP}
+#      - PASV_MIN_PORT=21100
+#      - PASV_MAX_PORT=21110
+#      - FILE_OPEN_MODE=0666
+#      - LOCAL_UMASK=022
+#      - REVERSE_LOOKUP_ENABLE=NO
+#    volumes:
+#      - ./ftp_data:/home/vsftpd
