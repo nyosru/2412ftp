@@ -25,7 +25,8 @@ networks:
 services:
 
 
-  vsftpd:
+  fftp:
+    container_name: fftp
     build:
       context: .          # Указывает на текущий каталог
       dockerfile: ftp.Dockerfile  # Имя вашего Dockerfile
